@@ -3,7 +3,7 @@ import shutil
 import sys
 import os
 
-import cli
+import argparse3
 
 long_description = open("README.md", encoding="utf8").read()
 requirements = [line.strip() for line in open("requirements.txt", encoding="utf8").readlines()]
@@ -35,21 +35,23 @@ class UploadCommand(Command):
             pass
 
         self.status('Building Source and Wheel (universal) distribution…')
-        os.system('{0} setup.py sdist bdist_wheel'.format(sys.executable))
+        if os.system('{0} setup.py sdist bdist_wheel'.format(sys.executable)) != 0:
+            sys.exit(-1)
 
         self.status('Uploading the package to pypi via Twine…')
-        os.system('twine upload dist/*')
+        if os.system('twine upload dist/*') != 0:
+            sys.exit(-1)
 
         self.status('Pushing git tags…')
-        os.system('git tag v{0}'.format(cli.__version__))
+        os.system('git tag v{0}'.format(argparse3.__version__))
         os.system('git push --tags')
 
         sys.exit()
 
 
 setup(
-    name='cli',
-    version=str(cli.__version__),
+    name='argparse3',
+    version=str(argparse3.__version__),
     description='',
     long_description=long_description,
     long_description_content_type='text/markdown',
